@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "homer"
+version = "0.1.0"
+description = "Homer automates and stuff."
+authors = ["marcus <hillbillydev@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+aws-lambda-powertools = "^1.25.6"
+requests = "^2.27.1"
+cloudscraper = "^1.2.60"
+backoff = "^1.11.1"
+
+[tool.poetry.dev-dependencies]
+black = "*"
+cfn-lint = "*"
+flake8 = "*"
+flake8-black = "*"
+flake8-bugbear = "*"
+flake8-builtins = "*"
+flake8-comprehensions = "*"
+flake8-debugger = "*"
+flake8-eradicate = "*"
+flake8-fixme = "*"
+flake8-variables-names = "*"
+isort = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+target-version = ['py37']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+    | \.git          # root of the project
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''

@@ -1,4 +1,3 @@
-
 OUTPUT = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "http://example.com/example.json",
@@ -14,9 +13,7 @@ OUTPUT = {
             "uniqueItems": True,
             "examples": [["🥓 Bacon", "🥚 Eggs"]],
             "maxItems": 1000,
-            "items": {
-                "type": "string"
-            }
+            "items": {"type": "string"},
         },
     },
 }

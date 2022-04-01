@@ -1,15 +1,16 @@
-
 INPUT = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "http://example.com/example.json",
     "type": "object",
     "title": "Add New World Products",
     "description": "Data needed to add products into a basket.",
-    "examples": [{
-        "email": "john.doe@dev.com",
-        "password": "janedoe123",
-        "products": ["Eggs", "Bacon"]
-    }],
+    "examples": [
+        {
+            "email": "john.doe@dev.com",
+            "password": "janedoe123",
+            "products": ["Eggs", "Bacon"],
+        }
+    ],
     "required": ["email", "password", "products"],
     "properties": {
         "email": {
@@ -35,9 +36,7 @@ INPUT = {
             "minItems": 1,
             "maxItems": 1000,
             "uniqueItems": True,
-            "items": {
-                "type": "string"
-            },
+            "items": {"type": "string"},
         },
     },
 }
