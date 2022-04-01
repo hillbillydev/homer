@@ -207,8 +207,9 @@ class NewWorldClient():
     def __init__(self, username, password):
         self.token = self.__login(username, password)
 
+    @classmethod
     def get_readable_products(self):
-        return [x.replace("_", " ").title() for x in self.products_dict]
+        return [product.replace("_", " ").title() for product in self.products_dict]
 
     @backoff.on_exception(backoff.expo,
                           requests.exceptions.HTTPError,
@@ -251,5 +252,6 @@ class NewWorldClient():
         res.raise_for_status()
 
         return res.cookies.get("SessionCookieIdV2")
+
 
 

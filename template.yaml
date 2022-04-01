@@ -35,6 +35,17 @@ Resources:
       Architectures:
         - x86_64
 
+  GetReadableProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/get_readable_products/
+      Handler: app.lambda_handler
+      Layers:
+        - !Ref HomersSharedLayer
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+
   HomerAPI:
     Type: AWS::Serverless::Api
     Properties:
@@ -119,6 +130,33 @@ Resources:
                         {
                           "message": "$input.path('$.errorMessage')"
                         }
+          "/new-world/products/readable":
+            get:
+              summary: "Get a list of readable products from New World"
+              produces:
+                - application/json
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        title: ReadableProducts
+                        type: object
+                        properties:
+                          products:
+                            type: array
+                            items:
+                              type: string
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                credentials: !GetAtt HomerAPIRole.Arn
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetReadableProductsFunction.Arn}/invocations
+                responses:
+                  default:
+                    statusCode: 200
         components:
           schemas:
             GenericError:
@@ -142,7 +180,19 @@ Resources:
   HomerAPILogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub /aws/apigateway/HomerAPI-${HomerAPI}
+      LogGroupName: !Sub /aws/apigateway/homer-api-${HomerAPI}
+      RetentionInDays: 14
+
+  AddProductsToNewWorldBasketFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${AddProductsToNewWorldBasketFunction}"
+      RetentionInDays: 14
+
+  GetReadableProductsFunctionFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${GetReadableProductsFunction}"
       RetentionInDays: 14
 
   HomerAPICloudWatchLogsConfig:
@@ -175,6 +225,15 @@ Resources:
                   - "lambda:InvokeFunction"
                 Resource:
                   - !GetAtt AddProductsToNewWorldBasketFunction.Arn
+        - PolicyName: CallGetReadableProductsFunction
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource:
+                  - !GetAtt GetReadableProductsFunction.Arn
 
 
 Outputs:
