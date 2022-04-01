@@ -1,7 +1,6 @@
-# Homer
+# Homer Automates
 
-Homer helps out with home automations, the quality of the code is the same as the quality of Homer's mind.
-
+![](https://harriscmopartners.com/wp-content/uploads/HomerSimpson1.png)
 
 ## Groceries Shopping
 
