@@ -77,7 +77,7 @@ class NewWorldClient():
     @backoff.on_exception(backoff.expo,
                           requests.exceptions.HTTPError,
                           max_time=8)
-    def add_products(self, products):
+    def add_products_to_basket(self, products):
         session = cloudscraper.create_scraper()
 
         products_to_add = [self.products_dict[product.lower()] for product in products]
@@ -134,7 +134,7 @@ def lambda_handler(event, context):
     try:
         new_world_client = NewWorldClient(email, password)
 
-        new_world_client.add_products(products)
+        new_world_client.add_products_to_basket(products)
     except requests.HTTPError as err:
         logger.exception(err)
         raise err

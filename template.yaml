@@ -12,10 +12,10 @@ Globals:
 
 Resources:
 
-  AddNewWorldProductFunction:
+  AddProductsToNewWorldBasketFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: functions/add_new_world_products/
+      CodeUri: functions/add_products_to_new_world_basket/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
@@ -43,7 +43,7 @@ Resources:
             validateRequestBody: true
             validateRequestParameters: true
         paths:
-          "/new-world/add_products":
+          "/new-world/basket":
             post:
               summary: "Add products to a New World accounts basket."
               produces:
@@ -86,7 +86,7 @@ Resources:
                 passthroughBehavior: when_no_match
                 credentials: !GetAtt HomerAPIRole.Arn
                 uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddNewWorldProductFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddProductsToNewWorldBasketFunction.Arn}/invocations
                 requestTemplates:
                   application/json: !Sub |
                     #set($data = $input.path('$'))
@@ -160,7 +160,7 @@ Resources:
                 Action:
                   - "lambda:InvokeFunction"
                 Resource:
-                  - !GetAtt AddNewWorldProductFunction.Arn
+                  - !GetAtt AddProductsToNewWorldBasketFunction.Arn
 
 
 Outputs:
