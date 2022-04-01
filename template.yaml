@@ -12,11 +12,25 @@ Globals:
 
 Resources:
 
+  HomersSharedLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: "The homer app has shared dependencies, this will let me share that."
+      LayerName: "homer-shared-layer"
+      RetentionPolicy: Retain
+      ContentUri: ./layers/
+      CompatibleRuntimes:
+        - python3.9
+    Metadata:
+      BuildMethod: python3.9
+
   AddProductsToNewWorldBasketFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: functions/add_products_to_new_world_basket/
       Handler: app.lambda_handler
+      Layers:
+        - !Ref HomersSharedLayer
       Runtime: python3.9
       Architectures:
         - x86_64
