@@ -1,3 +1,4 @@
 requests
 cloudscraper
+aws-lambda-powertools
 backoff

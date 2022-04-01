@@ -1,5 +1,9 @@
 import cloudscraper
 import backoff
+import requests
+from aws_lambda_powertools import Logger
+
+logger = Logger(service="add_new_world_products")
 
 
 class NewWorldClient():
@@ -79,7 +83,7 @@ class NewWorldClient():
         }
 
         cookies = {
-            'SessionCookieIdV2': self.token 
+            'SessionCookieIdV2': self.token
         }
 
         res = session.post(
@@ -109,14 +113,29 @@ class NewWorldClient():
         return res.cookies.get("SessionCookieIdV2")
 
 
+@logger.inject_lambda_context
 def lambda_handler(event, context):
     email = event['email']
     password = event['password']
     products = event['products']
 
-    new_world_client = NewWorldClient(email, password)
+    logger.info({
+        "operation": "add products to ",
+        "email": "********",
+        "password": "********",
+        "products": products
+    })
 
-    new_world_client.add_products(products)
+    try:
+        new_world_client = NewWorldClient(email, password)
+
+        new_world_client.add_products(products)
+    except requests.HTTPError as err:
+        logger.exception(err)
+        raise err
+
+    logger.info(
+        f'Successfully added {len(products)} products to New Worlds basket.')
 
     return {
         "products": products
