@@ -1,4 +1,5 @@
 import cloudscraper
+import backoff
 
 
 class NewWorldClient():
@@ -65,6 +66,9 @@ class NewWorldClient():
     def get_readable_products(self):
         return [x.replace("_", " ").title() for x in self.products_dict]
 
+    @backoff.on_exception(backoff.expo,
+                          requests.exceptions.HTTPError,
+                          max_time=8)
     def add_products(self, products):
         session = cloudscraper.create_scraper()
 
@@ -86,6 +90,9 @@ class NewWorldClient():
 
         res.raise_for_status()
 
+    @backoff.on_exception(backoff.expo,
+                          requests.exceptions.HTTPError,
+                          max_time=8)
     def __login(self, username, password):
         payload = {
               "email": username,
