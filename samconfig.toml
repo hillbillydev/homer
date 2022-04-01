@@ -1,0 +1,15 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "homer-app"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-v5erd7qa6zcl"
+s3_prefix = "homer-app"
+region = "ap-southeast-2"
+profile = "sam"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []
+tags = "project=\"homer\""
+
