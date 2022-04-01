@@ -1,6 +1,10 @@
 import cloudscraper
 import backoff
 import requests
+
+import schemas
+
+from aws_lambda_powertools.utilities.validation import validator
 from aws_lambda_powertools import Logger
 
 logger = Logger(service="add_new_world_products")
@@ -113,6 +117,7 @@ class NewWorldClient():
         return res.cookies.get("SessionCookieIdV2")
 
 
+@validator(inbound_schema=schemas.INPUT)
 @logger.inject_lambda_context
 def lambda_handler(event, context):
     email = event['email']
@@ -120,7 +125,7 @@ def lambda_handler(event, context):
     products = event['products']
 
     logger.info({
-        "operation": "add products to ",
+        "operation": "add products to the basket",
         "email": "********",
         "password": "********",
         "products": products
