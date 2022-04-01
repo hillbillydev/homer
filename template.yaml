@@ -1,0 +1,148 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Homer's special spaghetti cloudformation code.
+
+Globals:
+  Function:
+    Timeout: 10
+
+Resources:
+
+  AddNewWorldProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/add_new_world_products/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+
+  HomerAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: homer-api
+      Description: This is where Homer screw things up.
+      StageName: v1
+      AccessLogSetting:
+        DestinationArn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${HomerAPILogGroup}"
+        Format: '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user","requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath", "status":"$context.status","protocol":"$context.protocol", "responseLength":"$context.responseLength", "error": "$context.error.message", "user_arn": "$context.identity.userArn"}'
+      MethodSettings:
+        - MetricsEnabled: True
+          ResourcePath: "/*"
+          HttpMethod: "*"
+          LoggingLevel: INFO
+      DefinitionBody:
+        openapi: "3.0.3"
+        x-amazon-apigateway-request-validator: all
+        x-amazon-apigateway-request-validators:
+          all:
+            validateRequestBody: true
+            validateRequestParameters: true
+        paths:
+          "/new-world/add_products":
+            post:
+              summary: "Add products to a New World accounts basket."
+              produces:
+                - application/json
+              responses:
+                '200':
+                  content:
+                    application/json:
+                      schema:
+                        title: Products
+                        type: array
+                        items:
+                          type: string
+                '403':
+                  content:
+                    application/json:
+                      schema:
+                        title: Products
+                        type: array
+                        items:
+                          type: string
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      title: AddProductsRequest
+                      description: "Contains information to add products"
+                      type: object
+                      properties:
+                        email:
+                          type: string
+                        password:
+                          type: string
+                        products:
+                          type: array
+                          items:
+                            type: string
+                      required:
+                        - email
+                        - password
+                        - products
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                credentials: !GetAtt HomerAPIRole.Arn
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddNewWorldProductFunction.Arn}/invocations
+                requestTemplates:
+                  application/json: !Sub |
+                    #set($data = $input.path('$'))
+                    {
+                      "email": "$data.email",
+                      "password": "$data.password",
+                      "products":  $data.products
+                    }
+                responses:
+                  default:
+                    statusCode: 200
+
+
+  HomerAPILogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/apigateway/HomerAPI-${HomerAPI}
+      RetentionInDays: 14
+
+  HomerAPICloudWatchLogsConfig:
+    Type: 'AWS::ApiGateway::Account'
+    Properties:
+      CloudWatchRoleArn: !GetAtt HomerAPIRole.Arn
+
+  HomerAPIRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - >-
+          arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+      Policies:
+        - PolicyName: CallAddNewWorldProductFunction
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource:
+                  - !GetAtt AddNewWorldProductFunction.Arn
+
+
+Outputs:
+  HomerAPIBase:
+    Description: "HomerAPI's Base URL"
+    Value: !Sub "https://${HomerAPI}.execute-api.${AWS::Region}.amazonaws.com/v1"
+
