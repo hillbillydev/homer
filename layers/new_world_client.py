@@ -249,7 +249,10 @@ class NewWorldClient:
     def add_products_to_basket(self, products):
         session = cloudscraper.create_scraper()
 
-        products_to_add = [self.products_dict[product.lower()] for product in products]
+        products_to_add = [
+            self.products_dict[product.lower().replace(" ", "_")]
+            for product in products
+        ]
 
         payload = {"products": products_to_add}
 
