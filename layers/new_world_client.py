@@ -256,10 +256,16 @@ class NewWorldClient:
         products_to_add = []
 
         for product_to_add in products:
-            key_like_product = product_to_add.lower().replace(" ", "_")
+            # This will take something like "🥔 Family Chips"
+            # and make it into "family_chips"
+            # FIX: would introduce a bug if input did not have an emoji.
+            key_like_product = product_to_add.lower().replace(" ", "_")[2:]
+
             product = self.products_dict.get(key_like_product)
 
-            if product.get('items'):
+            if product is None:
+                continue
+            elif product.get("items"):
                 for nested_product_to_add in product["items"]:
                     products_to_add.append(nested_product_to_add)
             else:
