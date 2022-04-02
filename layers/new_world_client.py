@@ -30,13 +30,13 @@ class NewWorldClient:
             "sale_type": "UNITS",
             "emoji": "🥓",
         },
-        "standard small milk": {
+        "standard_small_milk": {
             "productId": "5260707-EA-000NW",
             "quantity": 1,
             "sale_type": "UNITS",
             "emoji": "🥛",
         },
-        "light big milk": {
+        "light_big_milk": {
             "productId": "5026265-EA-000NW",
             "quantity": 1,
             "sale_type": "UNITS",
