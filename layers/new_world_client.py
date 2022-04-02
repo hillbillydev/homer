@@ -142,7 +142,7 @@ class NewWorldClient:
             "productId": "5010333-EA-000NW",
             "quantity": 1,
             "sale_type": "UNITS",
-            "emoji": "",
+            "emoji": "🐶",
         },
         "cat_snacks": {
             "productId": "5016211-EA-000NW",
@@ -209,6 +209,11 @@ class NewWorldClient:
                     "productId": "5005258-EA-000NW",  # Aero Bar
                     "quantity": 1,
                     "sale_type": "UNITS",
+                },
+                {
+                  "productId": "5201585-EA-000",  # Whittaker's Berry & Biscuit
+                  "quantity": 1,
+                  "sale_type": "UNITS"
                 },
             ],
             "emoji": "🍫",
