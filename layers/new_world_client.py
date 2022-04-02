@@ -169,44 +169,48 @@ class NewWorldClient:
             "emoji": "🤧",
         },
         "family_chips": {
-            "thick_sticky_ribs": {
-                "productId": "5272307_EA_000NW",
-                "quantity": 1,
-                "sale_type": "UNITS",
-            },
-            "thick_salt_vinegar": {
-                "productId": "5300123_EA_000NW",
-                "quantity": 1,
-                "sale_type": "UNITS",
-            },
-            "doritos_cheese_supreme": {
-                "productId": "5036437_EA_000NW",
-                "quantity": 1,
-                "sale_type": "UNITS",
-            },
+            "items": [
+                {
+                    "productId": "5272307_EA_000NW",  # Sticky Ribs
+                    "quantity": 1,
+                    "sale_type": "UNITS",
+                },
+                {
+                    "productId": "5300123_EA_000NW",  # Salt & Vinegar
+                    "quantity": 1,
+                    "sale_type": "UNITS",
+                },
+                {
+                    "productId": "5036437_EA_000NW",  # Doritos Cheese Supreme
+                    "quantity": 1,
+                    "sale_type": "UNITS",
+                },
+            ],
             "emoji": "🥔",
         },
         "family_chocolatebars": {
-            "turkish": {
-                "productId": "5005705-EA-000NW",
-                "quantity": 1,
-                "sale_type": "UNITS",
-            },
-            "caramilk_bar": {
-                "productId": "5285014-EA-000NW",
-                "quantity": 1,
-                "sale_type": "UNITS",
-            },
-            "fruit_and_nut_bar": {
-                "productId": "5009824-EA-000NW",
-                "quantity": 1,
-                "sale_type": "UNITS",
-            },
-            "aero_bar": {
-                "productId": "5005258-EA-000NW",
-                "quantity": 1,
-                "sale_type": "UNITS",
-            },
+            "items": [
+                {
+                    "productId": "5005705-EA-000NW",  # Turkish
+                    "quantity": 1,
+                    "sale_type": "UNITS",
+                },
+                {
+                    "productId": "5285014-EA-000NW",  # Caramilk
+                    "quantity": 1,
+                    "sale_type": "UNITS",
+                },
+                {
+                    "productId": "5009824-EA-000NW",  # Fruit and Nut bar
+                    "quantity": 1,
+                    "sale_type": "UNITS",
+                },
+                {
+                    "productId": "5005258-EA-000NW",  # Aero Bar
+                    "quantity": 1,
+                    "sale_type": "UNITS",
+                },
+            ],
             "emoji": "🍫",
         },
         "baby_wipes": {
@@ -249,10 +253,17 @@ class NewWorldClient:
     def add_products_to_basket(self, products):
         session = cloudscraper.create_scraper()
 
-        products_to_add = [
-            self.products_dict[product.lower().replace(" ", "_")]
-            for product in products
-        ]
+        products_to_add = []
+
+        for product_to_add in products:
+            key_like_product = product_to_add.lower().replace(" ", "_")
+            product = self.products_dict.get(key_like_product)
+
+            if product.get('items'):
+                for nested_product_to_add in product["items"]:
+                    products_to_add.append(nested_product_to_add)
+            else:
+                products_to_add.append(product)
 
         payload = {"products": products_to_add}
 
