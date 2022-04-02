@@ -148,7 +148,7 @@ class NewWorldClient:
             "productId": "5016211-EA-000NW",
             "quantity": 4,
             "sale_type": "UNITS",
-            "emoji": "🐶",
+            "emoji": "😽",
         },
         "toilet_paper": {
             "productId": "5030695-EA-000",
