@@ -1,11 +1,11 @@
 import backoff
 import cloudscraper
 import requests
+from classes import AddProductsResponse
 
 
 class NewWorldClient:
-
-    products_dict = {
+    __products_dict = {
         "butter": {
             "sale_type": "UNITS",
             "quantity": 1,
@@ -211,9 +211,9 @@ class NewWorldClient:
                     "sale_type": "UNITS",
                 },
                 {
-                  "productId": "5201585-EA-000",  # Whittaker's Berry & Biscuit
-                  "quantity": 1,
-                  "sale_type": "UNITS"
+                    "productId": "5201585-EA-000",  # Whittaker's Berry & Biscuit
+                    "quantity": 1,
+                    "sale_type": "UNITS",
                 },
             ],
             "emoji": "🍫",
@@ -244,21 +244,21 @@ class NewWorldClient:
         },
     }
 
-    def __init__(self, username, password):
+    def __init__(self, username: str, password: str):
         self.token = self.__login(username, password)
 
     @classmethod
-    def get_readable_products(self):
+    def get_readable_products(self) -> list[str]:
         return [
             f'{product["emoji"]} {key.replace("_", " ").title()}'
-            for key, product in self.products_dict.items()
+            for key, product in self.__products_dict.items()
         ]
 
     @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_time=8)
-    def add_products_to_basket(self, products):
+    def add_products_to_basket(self, products: list[str]) -> AddProductsResponse:
         session = cloudscraper.create_scraper()
 
-        products_to_add = []
+        products_to_add: list[str] = []
 
         for product_to_add in products:
             # This will take something like "🥔 Family Chips"
@@ -266,7 +266,7 @@ class NewWorldClient:
             # FIX: would introduce a bug if input did not have an emoji.
             key_like_product = product_to_add.lower().replace(" ", "_")[2:]
 
-            product = self.products_dict.get(key_like_product)
+            product = self.__products_dict.get(key_like_product)
 
             if product is None:
                 continue
@@ -288,8 +288,10 @@ class NewWorldClient:
 
         res.raise_for_status()
 
+        return AddProductsResponse.from_json(res.text)
+
     @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_time=8)
-    def __login(self, username, password):
+    def __login(self, username: str, password: str) -> str:
         payload = {"email": username, "password": password}
 
         session = cloudscraper.create_scraper()
