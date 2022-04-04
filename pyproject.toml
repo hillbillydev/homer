@@ -11,6 +11,7 @@ requests = "^2.27.1"
 cloudscraper = "^1.2.60"
 backoff = "^1.11.1"
 dataclasses-json = "^0.5.7"
+emoji = "^1.7.0"
 
 [tool.poetry.dev-dependencies]
 black = "*"

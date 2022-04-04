@@ -3,3 +3,4 @@ cloudscraper==1.2.60
 aws-lambda-powertools==1.25.6
 backoff==1.11.1
 dataclasses-json==0.5.7
+emoji == 1.7.0

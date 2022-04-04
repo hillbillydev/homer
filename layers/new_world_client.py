@@ -3,6 +3,7 @@ import cloudscraper
 import requests
 from aws_lambda_powertools import Logger, Tracer
 from classes import AddProductsResponse
+from emoji import UNICODE_EMOJI
 
 tracer = Tracer()
 logger = Logger(child=True)
@@ -269,14 +270,15 @@ class NewWorldClient:
         products_to_add: list[str] = []
 
         for product_to_add in products:
-            # This will take something like "🥔 Family Chips"
-            # and make it into "family_chips"
-            # FIX: would introduce a bug if input did not have an emoji.
-            key_like_product = product_to_add.lower().replace(" ", "_")[2:]
+            # This will take something like "🥔 Family Chips" and make it into "family_chips"
 
-            product = self.__products_dict.get(key_like_product)
+            product_to_add = self.__strip_starting_emoji(product_to_add)
+            key = product_to_add.strip().lower().replace(" ", "_")
+
+            product = self.__products_dict.get(key)
 
             if product is None:
+                logger.info(f"{key} does not exists")
                 continue
             elif product.get("items"):
                 for nested_product_to_add in product["items"]:
@@ -316,3 +318,9 @@ class NewWorldClient:
         res.raise_for_status()
 
         return res.cookies.get("SessionCookieIdV2")
+
+    def __strip_starting_emoji(self, sentence: str) -> str:
+        if sentence.startswith(tuple(UNICODE_EMOJI["en"])):
+            return sentence[1:]
+        else:
+            return sentence
