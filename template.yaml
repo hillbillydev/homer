@@ -6,6 +6,10 @@ Description: >
 Globals:
   Function:
     Timeout: 15
+    Tracing: Active
+    Architectures:
+      - x86_64
+    Runtime: python3.9
     Environment:
      Variables:
        LOG_LEVEL: INFO
@@ -31,9 +35,9 @@ Resources:
       Handler: app.lambda_handler
       Layers:
         - !Ref HomersSharedLayer
-      Runtime: python3.9
-      Architectures:
-        - x86_64
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: "add_new_world_products"
 
   GetReadableProductsFunction:
     Type: AWS::Serverless::Function
@@ -42,14 +46,15 @@ Resources:
       Handler: app.lambda_handler
       Layers:
         - !Ref HomersSharedLayer
-      Runtime: python3.9
-      Architectures:
-        - x86_64
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: "get_readable_products"
 
   HomerAPI:
     Type: AWS::Serverless::Api
     Properties:
       Name: homer-api
+      TracingEnabled: True
       Description: This is where Homer screw things up.
       StageName: v1
       AccessLogSetting:

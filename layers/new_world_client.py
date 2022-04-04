@@ -1,7 +1,11 @@
 import backoff
 import cloudscraper
 import requests
+from aws_lambda_powertools import Logger, Tracer
 from classes import AddProductsResponse
+
+tracer = Tracer()
+logger = Logger(child=True)
 
 
 class NewWorldClient:
@@ -245,9 +249,12 @@ class NewWorldClient:
     }
 
     def __init__(self, username: str, password: str):
+        logger.debug("logging in to new world")
         self.token = self.__login(username, password)
+        logger.debug("succeeded to login to new world")
 
     @classmethod
+    @tracer.capture_method
     def get_readable_products(self) -> list[str]:
         return [
             f'{product["emoji"]} {key.replace("_", " ").title()}'
@@ -255,6 +262,7 @@ class NewWorldClient:
         ]
 
     @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_time=8)
+    @tracer.capture_method
     def add_products_to_basket(self, products: list[str]) -> AddProductsResponse:
         session = cloudscraper.create_scraper()
 
@@ -280,6 +288,8 @@ class NewWorldClient:
 
         cookies = {"SessionCookieIdV2": self.token}
 
+        tracer.put_metadata(key="payload_to_new_world", value=payload)
+
         res = session.post(
             "https://www.newworld.co.nz/CommonApi/Cart/Index",
             json=payload,
@@ -291,6 +301,9 @@ class NewWorldClient:
         return AddProductsResponse.from_json(res.text)
 
     @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_time=8)
+    @tracer.capture_method(
+        capture_response=False
+    )  # Do not want the token to be traced.
     def __login(self, username: str, password: str) -> str:
         payload = {"email": username, "password": password}
 

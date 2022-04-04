@@ -3,13 +3,14 @@ from typing import Any, Dict
 
 import requests
 import schemas
-from aws_lambda_powertools import Logger
+from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.utilities.validation import validator
 from dataclasses_json import dataclass_json
 from new_world_client import NewWorldClient
 
-logger = Logger(service="add_new_world_products")
+logger = Logger()
+tracer = Tracer()
 
 
 @dataclass_json
@@ -22,6 +23,7 @@ class AddProductsToBasketRequest:
 
 @validator(inbound_schema=schemas.INPUT)
 @logger.inject_lambda_context
+@tracer.capture_lambda_handler
 def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
     parsed_event: AddProductsToBasketRequest = AddProductsToBasketRequest.from_dict(
         event
@@ -41,7 +43,10 @@ def lambda_handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, A
 
         res = new_world_client.add_products_to_basket(parsed_event.products)
 
+        tracer.put_annotation("add_products_to_basket", "SUCCESS")
+
     except requests.HTTPError as err:
+        tracer.put_annotation("add_products_to_basket", "FAILED")
         logger.exception(err)
         raise err
 
