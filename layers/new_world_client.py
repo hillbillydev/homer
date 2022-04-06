@@ -262,7 +262,7 @@ class NewWorldClient:
             for key, product in self.__products_dict.items()
         ]
 
-    @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_time=8)
+    @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_time=15)
     @tracer.capture_method
     def add_products_to_basket(self, products: list[str]) -> AddProductsResponse:
         session = cloudscraper.create_scraper()
@@ -302,7 +302,7 @@ class NewWorldClient:
 
         return AddProductsResponse.from_json(res.text)
 
-    @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_time=8)
+    @backoff.on_exception(backoff.expo, requests.exceptions.HTTPError, max_time=15)
     @tracer.capture_method(
         capture_response=False
     )  # Do not want the token to be traced.
