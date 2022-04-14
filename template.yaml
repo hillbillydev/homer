@@ -50,6 +50,12 @@ Resources:
         Variables:
           POWERTOOLS_SERVICE_NAME: "get_readable_products"
 
+  GetGeonetQuakesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/get_geonet_quakes/
+      Handler: app.lambda_handler
+
   HomerAPI:
     Type: AWS::Serverless::Api
     Properties:
