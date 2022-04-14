@@ -246,6 +246,22 @@ Resources:
                 Resource:
                   - !GetAtt GetReadableProductsFunction.Arn
 
+  GeonetQuakesStateMachine:
+      Type: AWS::Serverless::StateMachine
+      Properties:
+        Name: !Sub geonet-quakes-state-machine
+        Role: !Sub ${GeonetQuakesStateMachineRole.Arn}
+        Type: EXPRESS
+        Definition:
+          StartAt: MyLambdaState
+          States:
+            MyLambdaState:
+              Type: Task
+              Resource: !Sub ${GetGeonetQuakesFunction.Arn}
+              End: true
+        Tracing:
+          Enabled: true
+
   GeonetQuakesStateMachineRole:
       Type: AWS::IAM::Role
       Properties:
