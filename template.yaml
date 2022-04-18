@@ -16,6 +16,18 @@ Globals:
 
 Resources:
 
+  HomerTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: "Homer"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions: 
+        - AttributeName: "PK"
+          AttributeType: "S"
+      KeySchema: 
+        - AttributeName: "PK"
+          KeyType: "HASH"
+
   HomersSharedLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
@@ -283,6 +295,11 @@ Resources:
                             - lambda:InvokeFunction
                         Resource:
                             - !Sub ${GetGeonetQuakesFunction.Arn}
+                      - Effect: Allow
+                        Action:
+                          - 'dynamodb:PutItem'
+                          - 'dynamodb:GetItem' # TODO do I need this
+                        Resource: !GetAtt HomerTable.Arn
 
 Outputs:
   HomerAPIBase:
