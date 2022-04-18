@@ -27,6 +27,11 @@ invoke.add_products_to_new_world_basket:
 		-e functions/add_products_to_new_world_basket/event.json \
 		AddProductsToNewWorldBasketFunction
 
+invoke.get_geonet_quakes:
+	sam build && clear && sam local invoke \
+		-e functions/get_geonet_quakes/event.json \
+		GetGeonetQuakesFunction
+
 deploy:
 	sam build && sam deploy --no-confirm-changeset
 
